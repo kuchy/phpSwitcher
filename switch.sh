@@ -36,15 +36,14 @@ fi
 
 PHP=php$1
 
-#TODO rebuid to delete and add new row with module not comment out
 #TODO check if selected php version is instaled if not try to install
 #TODO check if brew installed
 
-#comment out active php module for apache2
-sudo sed -i '' 's/^LoadModule\ php5/#LoadModule\ php5/' /etc/apache2/httpd.conf
+#get path to apache libs from brew
+PATH_TO_PHP=`brew list $PHP | grep libexec`
 
-#uncomment selected version for apache
-sudo sed -i '' 's/\#LoadModule\ php5_module\ \/usr\/local\/Cellar\/'$PHP'/\LoadModule\ php5_module\ \/usr\/local\/Cellar\/'$PHP'/' /etc/apache2/httpd.conf
+#replace loaded module with new one
+sudo sed -i '.orig' 's|^LoadModule\ php5_module.*$|LoadModule\ php5_module\ '$PATH_TO_PHP'|' /etc/apache2/httpd.conf
 
 #link new php to console
 brew unlink $PHP && brew link --overwrite $PHP
