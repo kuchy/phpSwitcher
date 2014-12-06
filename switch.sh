@@ -36,11 +36,25 @@ fi
 
 PHP=php$1
 
-#TODO check if selected php version is instaled if not try to install
 #TODO check if brew installed
 
 #get path to apache libs from brew
 PATH_TO_PHP=`brew list $PHP | grep libexec`
+
+#install php if not installed
+if [ -z $PATH_TO_PHP ]; then
+  echo "missing brew installed php"
+
+  read -p "Want to instal "$PHP"?" -n 1 -r
+  echo
+
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+      brew install $PHP
+  else
+    echo "bye..."
+    exit
+  fi
+fi
 
 #replace loaded module with new one
 sudo sed -i '.orig' 's|^LoadModule\ php5_module.*$|LoadModule\ php5_module\ '$PATH_TO_PHP'|' /etc/apache2/httpd.conf
